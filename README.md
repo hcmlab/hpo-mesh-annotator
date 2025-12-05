@@ -38,15 +38,20 @@
 ```
 
 {
-   "version": "1.0.0",
-   "generated": "2025-12-05T22:16:00.000Z",
-   "steps": [
-      {
-         "index": 0,
-         "name": "Abnormality of the mouth",
-         "selectedPoints": [0, 1, 2, 3]
-      }
-   ]
+  "version": "1.0.0",
+  "generated": "2025-12-05T23:14:29.239Z",
+  "annotations": [
+    {
+      "id": "HP:0000153",
+      "description": "Abnormality of the mouth",
+      "points": []
+    },
+    {
+      "id": "HP:0000315",
+      "description": "Abnormality of the orbital region",
+      "points": []
+    }
+  ]
 }
 
 ```
