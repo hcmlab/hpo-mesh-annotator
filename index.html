@@ -196,7 +196,8 @@
                 Selected: <span id="selectedCount">0</span> / <span id="totalPoints">468</span> points
             </div>
             <div class="text-muted small mt-1">
-                Hold Ctrl/Cmd + drag to pan, scroll to zoom, click in the canvas on the camera symbol to reset the perspective.
+                Hold Ctrl/Cmd + drag to pan, scroll to zoom, click in the canvas on the camera symbol to reset the
+                perspective.
             </div>
         </div>
 
@@ -1435,11 +1436,8 @@
         "HP:0001999": "Abnormal facial shape",
         "HP:0000606": "Abnormality of the periorbital region",
         "HP:0000306": "Abnormality of the chin",
-        "HP:0410013": "Abnormality of the submandibular region",
         "HP:0005346": "Abnormal facial expression",
         "HP:0004493": "Craniofacial hyperostosis",
-        "HP:0004439": "Craniofacial dysostosis",
-        "HP:0002006": "Tessier cleft",
         "FINAL": "Congrats! You are done!",
     };
 
@@ -1558,7 +1556,7 @@
 
             // Attach fresh handlers
             gd.on('plotly_click', function (data) {
-                msSinceLastClick= new Date().getTime() - clickStamp.getTime();
+                msSinceLastClick = new Date().getTime() - clickStamp.getTime();
                 if (msSinceLastClick < 50) return;
                 clickStamp = new Date();
                 console.log('Click handler fired - SINGLE execution');

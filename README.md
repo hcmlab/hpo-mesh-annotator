@@ -13,7 +13,7 @@
 3. **Navigate** steps with Next/Previous or arrow keys
 4. **Export** `face-mesh-selections-YYYY-MM-DD.json`
 
-## 📊 HPO Steps (15 Total)
+## 📊 HPO Steps
 
 | Step | HPO Term                                |
 |------|-----------------------------------------|
@@ -27,11 +27,8 @@
 | 8    | Abnormal facial shape                   |
 | 9    | Abnormality of the periorbital region   |
 | 10   | Abnormality of the chin                 |
-| 11   | Abnormality of the submandibular region |
-| 12   | Abnormal facial expression              |
-| 13   | Craniofacial hyperostosis               |
-| 14   | Craniofacial dysostosis                 |
-| 15   | Tessier cleft                           |
+| 11   | Abnormal facial expression              |
+| 12   | Craniofacial hyperostosis               |
 
 ## 💾 Sample JSON Output
 
@@ -74,11 +71,14 @@
 
 ## 🎨 Customization
 
-Edit `faceMesh` array or `STEPS` in source:
+Edit `STEPS` in source:
 
 ```
 
-const STEPS = ["Your", "Custom", "HPO", "Terms"];
+const STEPS = {
+        "HP:XXXXXXX": "HPO description text goes here",
+        "FINAL": "Congrats! You are done!", // Keep this one
+    };
 
 ```
 
