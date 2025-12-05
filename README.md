@@ -8,7 +8,7 @@
 
 ## 🚀 Quick Start
 
-1. **Open** in any modern browser
+1. [**Open** in any modern browser](https://hcmlab.github.io/hpo-mesh-annotator/)
 2. **Annotate** points by clicking (blue=selected, gray=unselected)
 3. **Navigate** steps with Next/Previous or arrow keys
 4. **Export** `face-mesh-selections-YYYY-MM-DD.json`
