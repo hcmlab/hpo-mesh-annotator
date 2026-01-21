@@ -208,6 +208,10 @@
 
         <!-- Controls -->
         <div class="controls">
+            <label for="fileUpload" class="btn btn-info btn-step" style="cursor: pointer;">
+                📁 Upload JSON
+                <input type="file" id="fileUpload" accept=".json" style="display: none;">
+            </label>
             <button class="btn btn-secondary btn-step" id="prevStep" style="display: none;">
                 ← Previous
             </button>
@@ -1474,6 +1478,107 @@
         document.getElementById('exportBtn').style.display = currentStep === length - 1 ? 'inline-block' : 'none';
     }
 
+    function handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // Reset UI feedback
+        document.getElementById('uploadStatus')?.remove();
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+
+                // Validate structure
+                if (!importedData.version || !importedData.annotations || !Array.isArray(importedData.annotations)) {
+                    throw new Error('Invalid JSON format');
+                }
+
+                // Validate faceMesh count matches
+                if (importedData.faceMesh && importedData.faceMesh.length !== faceMesh.length) {
+                    throw new Error(`Point count mismatch: expected ${faceMesh.length}, got ${importedData.faceMesh?.length || 'unknown'}`);
+                }
+
+                // Store session metadata
+                sessionVersion = importedData.version;
+                sessionTimestamp = importedData.generated;
+
+                // Parse annotations: {stepIndex: Set(pointIds)}
+                const newSelections = {};
+                importedData.annotations.forEach((annotation, stepIdx) => {
+                    newSelections[stepIdx] = new Set(annotation.points || []);
+                });
+
+                // Restore selections and step
+                selections = newSelections;
+                currentStep = Math.max(0, Math.min(Object.keys(STEPS).length - 1, importedData.currentStep || 0));
+
+                // Validate selections don't contain invalid point IDs
+                Object.values(selections).forEach(pointSet => {
+                    pointSet.forEach(pointId => {
+                        if (pointId >= faceMesh.length || pointId < 0) {
+                            console.warn(`Invalid point ID ${pointId} found, removing`);
+                            pointSet.delete(pointId);
+                        }
+                    });
+                });
+
+                // Update UI and plot
+                updateUI();
+                updateProgress();
+                updateSelectionVisuals();
+
+                // Visual feedback
+                showUploadStatus(`✅ Session restored! Step ${currentStep + 1}/${Object.keys(STEPS).length} (${newSelections[currentStep]?.size || 0} points selected)`, 'success');
+
+                console.log('Session restored:', {
+                    version: sessionVersion,
+                    timestamp: sessionTimestamp,
+                    currentStep,
+                    totalAnnotations: Object.keys(selections).length
+                });
+
+                isResumingSession = true;
+
+            } catch (error) {
+                showUploadStatus(`❌ Error: ${error.message}`, 'error');
+                console.error('Upload error:', error);
+            }
+        };
+
+        reader.onerror = () => showUploadStatus('❌ Failed to read file', 'error');
+        reader.readAsText(file);
+
+        // Reset file input
+        event.target.value = '';
+    }
+
+    // NEW: Status feedback helper
+    function showUploadStatus(message, type = 'info') {
+        // Remove existing status
+        const existing = document.getElementById('uploadStatus');
+        if (existing) existing.remove();
+
+        // Create status div
+        const statusDiv = document.createElement('div');
+        statusDiv.id = 'uploadStatus';
+        statusDiv.className = `alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'}`;
+        statusDiv.style.cssText = `
+    margin: 1rem 0;
+    border-radius: 12px;
+    border-left: 4px solid ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8'};
+    animation: slideIn 0.3s ease;
+  `;
+        statusDiv.innerHTML = `
+    ${message}
+    <button type="button" class="btn-close ms-2" onclick="this.parentElement.remove()"></button>
+  `;
+
+        // Insert after controls
+        document.querySelector('.controls').parentNode.insertBefore(statusDiv, document.querySelector('.controls').nextSibling);
+    }
+
     // Update progress bar
     function updateProgress() {
         const progress = ((currentStep + 1) / Object.keys(STEPS).length) * 100;
@@ -1639,6 +1744,8 @@
             updateSelectionVisuals();
         }
     });
+
+    document.getElementById('fileUpload').addEventListener('change', handleFileUpload);
 
     // Export JSON
     document.getElementById('exportBtn').addEventListener('click', () => {
